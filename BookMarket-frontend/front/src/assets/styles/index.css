@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+}
+
+@layer components {
+  .glass-effect {
+    @apply bg-white/95 backdrop-blur-lg;
+  }
+
+  .gradient-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-primary to-purple-600 text-white transition-all duration-300;
+  }
+
+  .btn-primary:hover {
+    @apply transform -translate-y-0.5 shadow-lg;
+  }
+
+  .nav-link {
+    @apply relative;
+  }
+
+  .nav-link::after {
+    content: '';
+    @apply absolute bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300;
+  }
+
+  .nav-link:hover::after,
+  .nav-link.active::after {
+    @apply w-full;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300;
+  }
+
+  .card-hover:hover {
+    @apply transform -translate-y-2 shadow-xl;
+  }
+
+  .category-card {
+    @apply transition-all duration-300;
+  }
+
+  .category-card:hover {
+    @apply transform scale-105 shadow-xl;
+  }
+
+  .book-card {
+    @apply transition-all duration-300;
+  }
+
+  .book-card:hover {
+    @apply transform -translate-y-1.5 shadow-xl;
+  }
+
+  .feature-card {
+    @apply transition-all duration-300;
+  }
+
+  .feature-card:hover {
+    @apply transform -translate-y-1.5 shadow-xl;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="购物车页面，查看已选书籍、调整数量、计算价格及结算">
+    <meta name="keywords" content="购物车,结算,订单">
+    <title>购物车 - 书市</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        'primary-dark': '#4f46e5',
+                        secondary: '#f59e0b',
+                        accent: '#10b981',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        .checkbox-wrapper input:checked + .checkbox-custom {
+            background: #6366f1;
+            border-color: #6366f1;
+        }
+        .checkbox-wrapper input:checked + .checkbox-custom::after {
+            content: '✓';
+            color: white;
+            font-size: 12px;
+        }
+        .quantity-btn {
+            transition: all 0.2s ease;
+        }
+        .quantity-btn:hover {
+            background: #6366f1;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    
+    <header class="fixed top-0 left-0 right-0 z-50 glass-effect shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center space-x-2">
+                        <span class="text-3xl">📚</span>
+                        <span class="text-2xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">书市</span>
+                    </a>
+                </div>
+                
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-gray-600 hover:text-gray-900 font-medium">首页</a>
+                    <a href="books.html" class="text-gray-600 hover:text-gray-900 font-medium">全部书籍</a>
+                    <a href="seller-center.html" class="text-gray-600 hover:text-gray-900 font-medium">卖家中心</a>
+                </nav>
+
+                <div class="flex items-center space-x-4">
+                    <div class="hidden sm:flex items-center bg-gray-100 rounded-full px-4 py-2">
+                        <i class="fas fa-search text-gray-400 mr-2"></i>
+                        <input type="text" placeholder="搜索书名、作者、ISBN..." class="bg-transparent outline-none w-48 text-sm">
+                    </div>
+                    
+                    <a href="cart.html" class="relative p-2 text-primary hover:text-primary-dark transition-colors">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">3</span>
+                    </a>
+                    
+                    <a href="user-center.html" class="hidden sm:block px-4 py-2 text-primary font-medium hover:text-primary-dark transition-colors">用户中心</a>
+                    
+                    <button class="md:hidden p-2 text-gray-600">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <nav class="flex items-center text-sm text-gray-500 mb-8">
+                <a href="index.html" class="hover:text-primary transition-colors">首页</a>
+                <i class="fas fa-chevron-right mx-2 text-xs"></i>
+                <span class="text-gray-900">购物车</span>
+            </nav>
+
+            <div class="flex flex-col lg:flex-row gap-8">
+                <div class="flex-1">
+                    <div class="bg-white rounded-2xl shadow-sm p-6 mb-6">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                            <h1 class="text-2xl font-bold text-gray-900">我的购物车</h1>
+                            <div class="text-gray-600">
+                                共 <strong class="text-gray-900">3</strong> 件商品
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b border-gray-200">
+                                        <th class="py-4 px-2 text-left">
+                                            <label class="checkbox-wrapper flex items-center cursor-pointer">
+                                                <input type="checkbox" checked class="hidden">
+                                                <span class="checkbox-custom w-5 h-5 border-2 border-gray-300 rounded mr-3 flex items-center justify-center"></span>
+                                                <span class="text-gray-700 font-medium">全选</span>
+                                            </label>
+                                        </th>
+                                        <th class="py-4 px-2 text-left text-gray-700 font-medium">商品信息</th>
+                                        <th class="py-4 px-2 text-left text-gray-700 font-medium hidden sm:table-cell">单价</th>
+                                        <th class="py-4 px-2 text-left text-gray-700 font-medium">数量</th>
+                                        <th class="py-4 px-2 text-left text-gray-700 font-medium hidden sm:table-cell">小计</th>
+                                        <th class="py-4 px-2 text-left text-gray-700 font-medium">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                        <td class="py-4 px-2">
+                                            <label class="checkbox-wrapper flex items-center cursor-pointer">
+                                                <input type="checkbox" checked class="hidden">
+                                                <span class="checkbox-custom w-5 h-5 border-2 border-gray-300 rounded flex items-center justify-center"></span>
+                                            </label>
+                                        </td>
+                                        <td class="py-4 px-2">
+                                            <div class="flex items-center gap-4">
+                                                <img src="https://images.unsplash.com/photo-1532012197267-da84d127e765?w=80&h=100&fit=crop" alt="商品图片" class="w-16 h-20 rounded-lg object-cover">
+                                                <div>
+                                                    <h3 class="font-semibold text-gray-900 mb-1">JavaScript高级程序设计（第4版）</h3>
+                                                    <p class="text-sm text-gray-500">卖家：书香阁</p>
+                                                    <span class="inline-block mt-1 px-2 py-0.5 bg-accent text-white text-xs rounded-full">9成新</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 px-2 hidden sm:table-cell">
+                                            <div class="text-gray-900 font-medium">¥45.00</div>
+                                            <div class="text-sm text-gray-400 line-through">¥99.00</div>
+                                        </td>
+                                        <td class="py-4 px-2">
+                                            <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden w-24">
+                                                <button class="quantity-btn px-3 py-1 text-gray-600 hover:text-white">-</button>
+                                                <input type="number" value="1" class="w-12 text-center border-0 outline-none" min="1" max="1">
+                                                <button class="quantity-btn px-3 py-1 text-gray-600 hover:text-white">+</button>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 px-2 hidden sm:table-cell">
+                                            <div class="text-lg font-bold text-primary">¥45.00</div>
+                                        </td>
+                                        <td class="py-4 px-2">
+                                            <div class="flex flex-col gap-2">
+                                                <button class="text-sm text-primary hover:text-primary-dark">收藏</button>
+                                                <button class="text-sm text-red-500 hover:text-red-600">删除</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                        <td class="py-4 px-2">
+                                            <label class="checkbox-wrapper flex items-center cursor-pointer">
+                                                <input type="checkbox" checked class="hidden">
+                                                <span class="checkbox-custom w-5 h-5 border-2 border-gray-300 rounded flex items-center justify-center"></span>
+                                            </label>
+                                        </td>
+                                        <td class="py-4 px-2">
+                                            <div class="flex items-center gap-4">
+                                                <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=80&h=100&fit=crop" alt="商品图片" class="w-16 h-20 rounded-lg object-cover">
+                                                <div>
+                                                    <h3 class="font-semibold text-gray-900 mb-1">深入理解计算机系统</h3>
+                                                    <p class="text-sm text-gray-500">卖家：技术书屋</p>
+                                                    <span class="inline-block mt-1 px-2 py-0.5 bg-secondary text-white text-xs rounded-full">8成新</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 px-2 hidden sm:table-cell">
+                                            <div class="text-gray-900 font-medium">¥68.00</div>
+                                            <div class="text-sm text-gray-400 line-through">¥139.00</div>
+                                        </td>
+                                        <td class="py-4 px-2">
+                                            <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden w-24">
+                                                <button class="quantity-btn px-3 py-1 text-gray-600 hover:text-white">-</button>
+                                                <input type="number" value="1" class="w-12 text-center border-0 outline-none" min="1" max="1">
+                                                <button class="quantity-btn px-3 py-1 text-gray-600 hover:text-white">+</button>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 px-2 hidden sm:table-cell">
+                                            <div class="text-lg font-bold text-primary">¥68.00</div>
+                                        </td>
+                                        <td class="py-4 px-2">
+                                            <div class="flex flex-col gap-2">
+                                                <button class="text-sm text-primary hover:text-primary-dark">收藏</button>
+                                                <button class="text-sm text-red-500 hover:text-red-600">删除</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                        <td class="py-4 px-2">
+                                            <label class="checkbox-wrapper flex items-center cursor-pointer">
+                                                <input type="checkbox" checked class="hidden">
+                                                <span class="checkbox-custom w-5 h-5 border-2 border-gray-300 rounded flex items-center justify-center"></span>
+                                            </label>
+                                        </td>
+                                        <td class="py-4 px-2">
+                                            <div class="flex items-center gap-4">
+                                                <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=80&h=100&fit=crop" alt="商品图片" class="w-16 h-20 rounded-lg object-cover">
+                                                <div>
+                                                    <h3 class="font-semibold text-gray-900 mb-1">设计模式：可复用面向对象软件的基础</h3>
+                                                    <p class="text-sm text-gray-500">卖家：书香阁</p>
+                                                    <span class="inline-block mt-1 px-2 py-0.5 bg-accent text-white text-xs rounded-full">全新</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 px-2 hidden sm:table-cell">
+                                            <div class="text-gray-900 font-medium">¥35.00</div>
+                                            <div class="text-sm text-gray-400 line-through">¥55.00</div>
+                                        </td>
+                                        <td class="py-4 px-2">
+                                            <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden w-24">
+                                                <button class="quantity-btn px-3 py-1 text-gray-600 hover:text-white">-</button>
+                                                <input type="number" value="1" class="w-12 text-center border-0 outline-none" min="1" max="1">
+                                                <button class="quantity-btn px-3 py-1 text-gray-600 hover:text-white">+</button>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 px-2 hidden sm:table-cell">
+                                            <div class="text-lg font-bold text-primary">¥35.00</div>
+                                        </td>
+                                        <td class="py-4 px-2">
+                                            <div class="flex flex-col gap-2">
+                                                <button class="text-sm text-primary hover:text-primary-dark">收藏</button>
+                                                <button class="text-sm text-red-500 hover:text-red-600">删除</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                        <td class="py-4 px-2">
+                                            <label class="checkbox-wrapper flex items-center cursor-pointer">
+                                                <input type="checkbox" class="hidden">
+                                                <span class="checkbox-custom w-5 h-5 border-2 border-gray-300 rounded flex items-center justify-center"></span>
+                                            </label>
+                                        </td>
+                                        <td class="py-4 px-2">
+                                            <div class="flex items-center gap-4">
+                                                <img src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=80&h=100&fit=crop" alt="商品图片" class="w-16 h-20 rounded-lg object-cover">
+                                                <div>
+                                                    <h3 class="font-semibold text-gray-900 mb-1">代码整洁之道</h3>
+                                                    <p class="text-sm text-gray-500">卖家：技术书屋</p>
+                                                    <span class="inline-block mt-1 px-2 py-0.5 bg-secondary text-white text-xs rounded-full">8成新</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 px-2 hidden sm:table-cell">
+                                            <div class="text-gray-900 font-medium">¥32.00</div>
+                                            <div class="text-sm text-gray-400 line-through">¥59.00</div>
+                                        </td>
+                                        <td class="py-4 px-2">
+                                            <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden w-24">
+                                                <button class="quantity-btn px-3 py-1 text-gray-600 hover:text-white">-</button>
+                                                <input type="number" value="1" class="w-12 text-center border-0 outline-none" min="1" max="1">
+                                                <button class="quantity-btn px-3 py-1 text-gray-600 hover:text-white">+</button>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 px-2 hidden sm:table-cell">
+                                            <div class="text-lg font-bold text-gray-400">¥32.00</div>
+                                        </td>
+                                        <td class="py-4 px-2">
+                                            <div class="flex flex-col gap-2">
+                                                <button class="text-sm text-primary hover:text-primary-dark">收藏</button>
+                                                <button class="text-sm text-red-500 hover:text-red-600">删除</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-6 pt-6 border-t border-gray-200">
+                            <div class="flex flex-wrap gap-3">
+                                <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-trash-alt mr-2"></i>删除选中商品
+                                </button>
+                                <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-broom mr-2"></i>清空购物车
+                                </button>
+                                <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-heart mr-2"></i>移入收藏夹
+                                </button>
+                            </div>
+                            <div class="text-gray-600">
+                                已选择 <strong class="text-gray-900">3</strong> 件商品
+                            </div>
+                        </div>
+                    </div>
+
+                    <section class="bg-white rounded-2xl shadow-sm p-6">
+                        <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                            <i class="fas fa-heart mr-2 text-red-500"></i>猜你喜欢
+                        </h2>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                            <div class="bg-gray-50 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
+                                <img src="https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=200&h=280&fit=crop" alt="书籍封面" class="w-full h-48 object-cover">
+                                <div class="p-4">
+                                    <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2">算法导论</h3>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-lg font-bold text-primary">¥78.00</span>
+                                        <span class="text-sm text-gray-400 line-through">¥128.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
+                                <img src="https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=200&h=280&fit=crop" alt="书籍封面" class="w-full h-48 object-cover">
+                                <div class="p-4">
+                                    <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2">人月神话</h3>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-lg font-bold text-primary">¥28.00</span>
+                                        <span class="text-sm text-gray-400 line-through">¥48.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
+                                <img src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=200&h=280&fit=crop" alt="书籍封面" class="w-full h-48 object-cover">
+                                <div class="p-4">
+                                    <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2">重构：改善既有代码的设计</h3>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-lg font-bold text-primary">¥55.00</span>
+                                        <span class="text-sm text-gray-400 line-through">¥89.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
+                                <img src="https://images.unsplash.com/photo-1532012197267-da84d127e765?w=200&h=280&fit=crop" alt="书籍封面" class="w-full h-48 object-cover">
+                                <div class="p-4">
+                                    <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2">深入浅出Vue.js</h3>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-lg font-bold text-primary">¥38.00</span>
+                                        <span class="text-sm text-gray-400 line-through">¥69.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="lg:w-80 flex-shrink-0">
+                    <div class="bg-white rounded-2xl shadow-sm p-6 sticky top-24">
+                        <h2 class="text-lg font-bold text-gray-900 mb-6">订单摘要</h2>
+                        
+                        <div class="space-y-4 mb-6">
+                            <div class="flex justify-between text-gray-600">
+                                <span>商品总额</span>
+                                <span class="font-medium">¥148.00</span>
+                            </div>
+                            <div class="flex justify-between text-gray-600">
+                                <span>运费</span>
+                                <span class="font-medium">¥0.00</span>
+                            </div>
+                            <div class="flex justify-between text-gray-600">
+                                <span>优惠</span>
+                                <span class="font-medium text-red-500">-¥0.00</span>
+                            </div>
+                            <div class="border-t border-gray-200 pt-4">
+                                <div class="flex justify-between">
+                                    <span class="text-lg font-bold text-gray-900">合计</span>
+                                    <span class="text-2xl font-bold text-primary">¥148.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="w-full py-4 bg-gradient-to-r from-primary to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all">
+                            <i class="fas fa-credit-card mr-2"></i>去结算
+                        </button>
+
+                        <div class="mt-4 text-center text-sm text-gray-500">
+                            <i class="fas fa-shield-alt text-accent mr-2"></i>7天无理由退换货
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-900 text-white py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p>&copy; 2024 书市 版权所有 | 京ICP备XXXXXXXX号</p>
+        </div>
+    </footer>
+
+</body>
+</html>

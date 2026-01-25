@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="用户中心，管理个人信息、查看订单、收藏及交易记录">
+    <meta name="keywords" content="用户中心,个人信息,我的订单,我的收藏">
+    <title>用户中心 - 书市</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        'primary-dark': '#4f46e5',
+                        secondary: '#f59e0b',
+                        accent: '#10b981',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        .nav-item {
+            transition: all 0.3s ease;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: linear-gradient(90deg, #eef2ff 0%, transparent 100%);
+            color: #6366f1;
+        }
+        .nav-item.active {
+            border-left: 3px solid #6366f1;
+        }
+        .tab-btn {
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active {
+            color: #6366f1;
+            border-bottom: 2px solid #6366f1;
+        }
+        .order-item {
+            transition: all 0.3s ease;
+        }
+        .order-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    
+    <header class="fixed top-0 left-0 right-0 z-50 glass-effect shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center space-x-2">
+                        <span class="text-3xl">📚</span>
+                        <span class="text-2xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">书市</span>
+                    </a>
+                </div>
+                
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-gray-600 hover:text-gray-900 font-medium">首页</a>
+                    <a href="books.html" class="text-gray-600 hover:text-gray-900 font-medium">全部书籍</a>
+                    <a href="seller-center.html" class="text-gray-600 hover:text-gray-900 font-medium">卖家中心</a>
+                </nav>
+
+                <div class="flex items-center space-x-4">
+                    <div class="hidden sm:flex items-center bg-gray-100 rounded-full px-4 py-2">
+                        <i class="fas fa-search text-gray-400 mr-2"></i>
+                        <input type="text" placeholder="搜索书名、作者、ISBN..." class="bg-transparent outline-none w-48 text-sm">
+                    </div>
+                    
+                    <a href="cart.html" class="relative p-2 text-gray-600 hover:text-gray-900 transition-colors">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">3</span>
+                    </a>
+                    
+                    <a href="user-center.html" class="hidden sm:block px-4 py-2 text-primary font-medium hover:text-primary-dark transition-colors">用户中心</a>
+                    
+                    <button class="md:hidden p-2 text-gray-600">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            
+            <section class="bg-gradient-to-r from-primary to-purple-600 rounded-2xl shadow-lg p-6 lg:p-8 mb-8 text-white">
+                <div class="flex flex-col md:flex-row items-center gap-6">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&h=120&fit=crop" alt="用户头像" class="w-24 h-24 rounded-full object-cover border-4 border-white/30">
+                        <button class="absolute bottom-0 right-0 w-8 h-8 bg-white text-primary rounded-full flex items-center justify-center shadow-lg hover:bg-gray-100 transition-colors">
+                            <i class="fas fa-camera text-sm"></i>
+                        </button>
+                    </div>
+                    <div class="flex-1 text-center md:text-left">
+                        <h2 class="text-2xl font-bold mb-2">张三</h2>
+                        <p class="text-white/80 mb-3">用户ID：100001</p>
+                        <div class="flex flex-wrap justify-center md:justify-start gap-3">
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-sm">普通会员</span>
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-sm">积分：2,580</span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold">12</div>
+                            <div class="text-white/80 text-sm">待付款</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold">5</div>
+                            <div class="text-white/80 text-sm">待发货</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold">3</div>
+                            <div class="text-white/80 text-sm">待收货</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold">8</div>
+                            <div class="text-white/80 text-sm">待评价</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="flex flex-col lg:flex-row gap-8">
+                <aside class="lg:w-64 flex-shrink-0">
+                    <div class="bg-white rounded-2xl shadow-sm overflow-hidden sticky top-24">
+                        <nav class="sidebar-nav">
+                            <a href="#" class="nav-item active flex items-center px-6 py-4 text-gray-700">
+                                <i class="fas fa-list-alt w-6 text-center mr-3"></i>
+                                <span>我的订单</span>
+                            </a>
+                            <a href="#" class="nav-item flex items-center px-6 py-4 text-gray-700">
+                                <i class="fas fa-heart w-6 text-center mr-3"></i>
+                                <span>我的收藏</span>
+                            </a>
+                            <a href="#" class="nav-item flex items-center px-6 py-4 text-gray-700">
+                                <i class="fas fa-shopping-bag w-6 text-center mr-3"></i>
+                                <span>买入记录</span>
+                            </a>
+                            <a href="#" class="nav-item flex items-center px-6 py-4 text-gray-700">
+                                <i class="fas fa-hand-holding-usd w-6 text-center mr-3"></i>
+                                <span>卖出记录</span>
+                            </a>
+                            <a href="#" class="nav-item flex items-center px-6 py-4 text-gray-700">
+                                <i class="fas fa-map-marker-alt w-6 text-center mr-3"></i>
+                                <span>收货地址</span>
+                            </a>
+                            <a href="#" class="nav-item flex items-center px-6 py-4 text-gray-700">
+                                <i class="fas fa-shield-alt w-6 text-center mr-3"></i>
+                                <span>账户安全</span>
+                            </a>
+                            <a href="#" class="nav-item flex items-center px-6 py-4 text-gray-700">
+                                <i class="fas fa-cog w-6 text-center mr-3"></i>
+                                <span>设置</span>
+                            </a>
+                        </nav>
+                    </div>
+                </aside>
+
+                <div class="flex-1">
+                    <div class="bg-white rounded-2xl shadow-sm p-6">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                            <h2 class="text-xl font-bold text-gray-900">我的订单</h2>
+                            <div class="flex flex-wrap gap-2">
+                                <button class="tab-btn active px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary">全部订单</button>
+                                <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary">待付款</button>
+                                <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary">待发货</button>
+                                <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary">待收货</button>
+                                <button class="tab-btn px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary">已完成</button>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div class="order-item border border-gray-200 rounded-xl overflow-hidden">
+                                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 bg-gray-50 border-b border-gray-200">
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-sm text-gray-600">订单号：202401150001</span>
+                                        <span class="text-sm text-gray-500">2024-01-15 14:32:18</span>
+                                    </div>
+                                    <span class="px-3 py-1 bg-orange-100 text-orange-700 text-sm rounded-full">待付款</span>
+                                </div>
+                                <div class="p-4">
+                                    <div class="flex items-center gap-4 mb-4">
+                                        <img src="https://images.unsplash.com/photo-1532012197267-da84d127e765?w=80&h=100&fit=crop" alt="商品图片" class="w-16 h-20 rounded-lg object-cover">
+                                        <div class="flex-1">
+                                            <h3 class="font-semibold text-gray-900 mb-1">JavaScript高级程序设计（第4版）</h3>
+                                            <p class="text-sm text-gray-500">9成新</p>
+                                        </div>
+                                        <div class="text-gray-900 font-medium">¥45.00</div>
+                                        <div class="text-gray-600">x1</div>
+                                    </div>
+                                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-4 border-t border-gray-200">
+                                        <div class="text-gray-600">
+                                            共1件商品，合计：<strong class="text-gray-900">¥45.00</strong>
+                                        </div>
+                                        <div class="flex gap-3">
+                                            <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">取消订单</button>
+                                            <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">立即付款</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="order-item border border-gray-200 rounded-xl overflow-hidden">
+                                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 bg-gray-50 border-b border-gray-200">
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-sm text-gray-600">订单号：202401120002</span>
+                                        <span class="text-sm text-gray-500">2024-01-12 09:15:33</span>
+                                    </div>
+                                    <span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full">待收货</span>
+                                </div>
+                                <div class="p-4">
+                                    <div class="flex items-center gap-4 mb-4">
+                                        <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=80&h=100&fit=crop" alt="商品图片" class="w-16 h-20 rounded-lg object-cover">
+                                        <div class="flex-1">
+                                            <h3 class="font-semibold text-gray-900 mb-1">深入理解计算机系统</h3>
+                                            <p class="text-sm text-gray-500">8成新</p>
+                                        </div>
+                                        <div class="text-gray-900 font-medium">¥68.00</div>
+                                        <div class="text-gray-600">x1</div>
+                                    </div>
+                                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-4 border-t border-gray-200">
+                                        <div class="text-gray-600">
+                                            共1件商品，合计：<strong class="text-gray-900">¥68.00</strong>
+                                        </div>
+                                        <div class="flex gap-3">
+                                            <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">查看物流</button>
+                                            <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">确认收货</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="order-item border border-gray-200 rounded-xl overflow-hidden">
+                                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 bg-gray-50 border-b border-gray-200">
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-sm text-gray-600">订单号：202401080003</span>
+                                        <span class="text-sm text-gray-500">2024-01-08 16:45:22</span>
+                                    </div>
+                                    <span class="px-3 py-1 bg-accent text-white text-sm rounded-full">已完成</span>
+                                </div>
+                                <div class="p-4">
+                                    <div class="flex items-center gap-4 mb-4">
+                                        <img src="https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=80&h=100&fit=crop" alt="商品图片" class="w-16 h-20 rounded-lg object-cover">
+                                        <div class="flex-1">
+                                            <h3 class="font-semibold text-gray-900 mb-1">人月神话</h3>
+                                            <p class="text-sm text-gray-500">7成新</p>
+                                        </div>
+                                        <div class="text-gray-900 font-medium">¥28.00</div>
+                                        <div class="text-gray-600">x1</div>
+                                    </div>
+                                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-4 border-t border-gray-200">
+                                        <div class="text-gray-600">
+                                            共1件商品，合计：<strong class="text-gray-900">¥28.00</strong>
+                                        </div>
+                                        <div class="flex gap-3">
+                                            <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">评价</button>
+                                            <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">再次购买</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 flex justify-center">
+                            <nav class="flex items-center gap-2">
+                                <button class="px-4 py-2 border border-gray-300 rounded-lg text-gray-400 cursor-not-allowed" disabled>
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button class="px-4 py-2 bg-primary text-white rounded-lg">1</button>
+                                <button class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100">2</button>
+                                <button class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100">3</button>
+                                <button class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-900 text-white py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p>&copy; 2024 书市 版权所有 | 京ICP备XXXXXXXX号</p>
+        </div>
+    </footer>
+
+</body>
+</html>
