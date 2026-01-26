@@ -177,7 +177,19 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
 ```
 
-#### 2. 书籍表 (book)
+#### 2. 分类表 (category)
+```sql
+CREATE TABLE `category` (
+  `id` VARCHAR(50) PRIMARY KEY COMMENT '分类ID（英文标识）',
+  `name` VARCHAR(50) NOT NULL COMMENT '分类名称',
+  `icon` VARCHAR(10) NOT NULL COMMENT '分类图标（emoji）',
+  `description` VARCHAR(200) COMMENT '分类描述',
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='分类表';
+```
+
+#### 3. 书籍表 (book)
 ```sql
 CREATE TABLE `book` (
   `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -187,7 +199,7 @@ CREATE TABLE `book` (
   `publisher` VARCHAR(100) COMMENT '出版社',
   `publish_date` VARCHAR(20) COMMENT '出版时间',
   `pages` INT COMMENT '页数',
-  `category` VARCHAR(50) NOT NULL COMMENT '分类',
+  `category_id` VARCHAR(50) NOT NULL COMMENT '分类ID',
   `condition` VARCHAR(20) NOT NULL COMMENT '新旧程度',
   `price` DECIMAL(10,2) NOT NULL COMMENT '售价',
   `original_price` DECIMAL(10,2) COMMENT '原价',
@@ -204,7 +216,7 @@ CREATE TABLE `book` (
   `status` TINYINT DEFAULT 1 COMMENT '状态：1-在售，0-下架',
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  INDEX idx_category (`category`),
+  INDEX idx_category (`category_id`),
   INDEX idx_seller (`seller_id`),
   INDEX idx_price (`price`),
   INDEX idx_created (`created_at`),
@@ -212,7 +224,7 @@ CREATE TABLE `book` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='书籍表';
 ```
 
-#### 3. 购物车表 (cart)
+#### 4. 购物车表 (cart)
 ```sql
 CREATE TABLE `cart` (
   `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -228,7 +240,7 @@ CREATE TABLE `cart` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='购物车表';
 ```
 
-#### 4. 收藏表 (favorite)
+#### 5. 收藏表 (favorite)
 ```sql
 CREATE TABLE `favorite` (
   `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -243,7 +255,7 @@ CREATE TABLE `favorite` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='收藏表';
 ```
 
-#### 5. 订单表 (order)
+#### 6. 订单表 (order)
 ```sql
 CREATE TABLE `order` (
   `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -458,266 +470,6 @@ public class ApiResponse<T> {
 }
 ```
 
-### 步骤5：创建实体类
-```java
-package com.bookmarket.entity;
-
-import jakarta.persistence.*;
-import lombok.Data;
-import java.time.LocalDateTime;
-
-@Data
-@Entity
-@Table(name = "book")
-public class Book {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String title;
-    private String author;
-    private String isbn;
-    private String publisher;
-    private String publishDate;
-    private Integer pages;
-    private String category;
-    private String condition;
-    private Double price;
-    private Double originalPrice;
-    private Integer stock;
-    private String cover;
-    @Column(columnDefinition = "JSON")
-    private String images;
-    @Column(columnDefinition = "TEXT")
-    private String description;
-    private Long sellerId;
-    private String sellerName;
-    private String sellerLevel;
-    private Double sellerRating;
-    private Boolean isVerified;
-    private Integer salesCount;
-    private Integer status;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-}
-```
-
-### 步骤6：创建Repository
-```java
-package com.bookmarket.repository;
-
-import com.bookmarket.entity.Book;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
-
-import java.util.List;
-
-@Repository
-public interface BookRepository extends JpaRepository<Book, Long> {
-
-    List<Book> findByCategory(String category);
-
-    @Query("SELECT b FROM Book b WHERE b.status = 1 ORDER BY b.salesCount DESC")
-    Page<Book> findHotBooks(Pageable pageable);
-
-    @Query("SELECT b FROM Book b WHERE " +
-           "(:keyword IS NULL OR b.title LIKE %:keyword% OR b.author LIKE %:keyword% OR b.isbn LIKE %:keyword%) " +
-           "AND (:category IS NULL OR b.category = :category) " +
-           "AND (:priceMin IS NULL OR b.price >= :priceMin) " +
-           "AND (:priceMax IS NULL OR b.price <= :priceMax) " +
-           "AND (:condition IS NULL OR b.condition = :condition)")
-    Page<Book> searchBooks(@Param("keyword") String keyword,
-                          @Param("category") String category,
-                          @Param("priceMin") Double priceMin,
-                          @Param("priceMax") Double priceMax,
-                          @Param("condition") String condition,
-                          Pageable pageable);
-}
-```
-
-### 步骤7：创建Service
-```java
-package com.bookmarket.service;
-
-import com.bookmarket.dto.response.ApiResponse;
-import com.bookmarket.entity.Book;
-import org.springframework.data.domain.Page;
-
-import java.util.List;
-
-public interface BookService {
-    ApiResponse<List<CategoryVO>> getCategories();
-    ApiResponse<List<Book>> getHotBooks(Integer limit);
-    ApiResponse<PageData<Book>> getBooks(BookQueryRequest request);
-    ApiResponse<BookDetailVO> getBookDetail(Long id);
-    ApiResponse<PageData<Book>> searchBooks(String keyword, Integer page, Integer pageSize);
-}
-```
-
-### 步骤8：创建Controller
-```java
-package com.bookmarket.controller;
-
-import com.bookmarket.dto.request.BookQueryRequest;
-import com.bookmarket.dto.response.ApiResponse;
-import com.bookmarket.entity.Book;
-import com.bookmarket.service.BookService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
-@RestController
-@RequestMapping("/books")
-@RequiredArgsConstructor
-@Tag(name = "书籍管理", description = "书籍相关接口")
-public class BookController {
-
-    private final BookService bookService;
-
-    @GetMapping("/categories")
-    @Operation(summary = "获取热门分类")
-    public ApiResponse<List<CategoryVO>> getCategories() {
-        return bookService.getCategories();
-    }
-
-    @GetMapping("/hot")
-    @Operation(summary = "获取热门书籍")
-    public ApiResponse<List<Book>> getHotBooks(@RequestParam(defaultValue = "4") Integer limit) {
-        return bookService.getHotBooks(limit);
-    }
-
-    @GetMapping
-    @Operation(summary = "获取书籍列表")
-    public ApiResponse<PageData<Book>> getBooks(BookQueryRequest request) {
-        return bookService.getBooks(request);
-    }
-
-    @GetMapping("/{id}")
-    @Operation(summary = "获取书籍详情")
-    public ApiResponse<BookDetailVO> getBookDetail(@PathVariable Long id) {
-        return bookService.getBookDetail(id);
-    }
-
-    @GetMapping("/search")
-    @Operation(summary = "搜索书籍")
-    public ApiResponse<PageData<Book>> searchBooks(
-            @RequestParam String keyword,
-            @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "12") Integer pageSize) {
-        return bookService.searchBooks(keyword, page, pageSize);
-    }
-}
-```
-
----
-
-## 🔐 认证与授权
-
-### JWT工具类
-```java
-package com.bookmarket.common.util;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-import java.security.Key;
-import java.util.Date;
-
-@Component
-public class JwtUtil {
-
-    @Value("${jwt.secret}")
-    private String secret;
-
-    @Value("${jwt.expiration}")
-    private Long expiration;
-
-    private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes());
-    }
-
-    public String generateToken(Long userId, String username) {
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + expiration);
-
-        return Jwts.builder()
-                .setSubject(userId.toString())
-                .claim("username", username)
-                .setIssuedAt(now)
-                .setExpiration(expiryDate)
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-                .compact();
-    }
-
-    public Claims parseToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
-    public Long getUserIdFromToken(String token) {
-        Claims claims = parseToken(token);
-        return Long.parseLong(claims.getSubject());
-    }
-}
-```
-
-### 认证拦截器
-```java
-package com.bookmarket.interceptor;
-
-import com.bookmarket.common.util.JwtUtil;
-import com.bookmarket.common.exception.BusinessException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.HandlerInterceptor;
-
-@Component
-@RequiredArgsConstructor
-public class AuthInterceptor implements HandlerInterceptor {
-
-    private final JwtUtil jwtUtil;
-
-    @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        String token = request.getHeader("Authorization");
-        if (token == null || !token.startsWith("Bearer ")) {
-            throw new BusinessException(401, "未授权，请先登录");
-        }
-
-        token = token.substring(7);
-        try {
-            jwtUtil.getUserIdFromToken(token);
-            return true;
-        } catch (Exception e) {
-            throw new BusinessException(401, "Token无效或已过期");
-        }
-    }
-}
-```
-
----
-
 ## 📝 开发注意事项
 
 ### 1. 接口响应格式
@@ -813,14 +565,3 @@ class BookServiceTest {
 - [JWT文档](https://jwt.io/)
 
 ---
-
-## 🎯 下一步
-
-1. 创建Spring Boot项目
-2. 配置数据库连接
-3. 创建数据库表结构
-4. 实现书籍相关接口（优先）
-5. 实现认证相关接口
-6. 实现其他业务接口
-7. 编写单元测试
-8. 部署到服务器
