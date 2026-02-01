@@ -281,193 +281,23 @@ CREATE TABLE `order` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='订单表';
 ```
 
----
-
-## 🎯 开发步骤
-
-### 步骤1：创建项目
-```bash
-# 使用Spring Initializr创建项目
-# 访问 https://start.spring.io/
-# 选择：
-# - Project: Maven
-# - Language: Java
-# - Spring Boot: 3.2.x
-# - Dependencies:
-#   - Spring Web
-#   - Spring Data JPA
-#   - MySQL Driver
-#   - Spring Security
-#   - Validation
-#   - Lombok
-```
-
-### 步骤2：配置依赖 (pom.xml)
-```xml
-<dependencies>
-    <!-- Spring Boot Starter Web -->
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-
-    <!-- Spring Boot Starter Data JPA -->
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-data-jpa</artifactId>
-    </dependency>
-
-    <!-- Spring Boot Starter Security -->
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-security</artifactId>
-    </dependency>
-
-    <!-- Spring Boot Starter Validation -->
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-validation</artifactId>
-    </dependency>
-
-    <!-- MySQL Driver -->
-    <dependency>
-        <groupId>com.mysql</groupId>
-        <artifactId>mysql-connector-j</artifactId>
-        <scope>runtime</scope>
-    </dependency>
-
-    <!-- Redis -->
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-data-redis</artifactId>
-    </dependency>
-
-    <!-- JWT -->
-    <dependency>
-        <groupId>io.jsonwebtoken</groupId>
-        <artifactId>jjwt-api</artifactId>
-        <version>0.12.3</version>
-    </dependency>
-    <dependency>
-        <groupId>io.jsonwebtoken</groupId>
-        <artifactId>jjwt-impl</artifactId>
-        <version>0.12.3</version>
-        <scope>runtime</scope>
-    </dependency>
-    <dependency>
-        <groupId>io.jsonwebtoken</groupId>
-        <artifactId>jjwt-jackson</artifactId>
-        <version>0.12.3</version>
-        <scope>runtime</scope>
-    </dependency>
-
-    <!-- Lombok -->
-    <dependency>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok</artifactId>
-        <optional>true</optional>
-    </dependency>
-
-    <!-- Hutool -->
-    <dependency>
-        <groupId>cn.hutool</groupId>
-        <artifactId>hutool-all</artifactId>
-        <version>5.8.25</version>
-    </dependency>
-
-    <!-- Knife4j (Swagger) -->
-    <dependency>
-        <groupId>com.github.xiaoymin</groupId>
-        <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
-        <version>4.4.0</version>
-    </dependency>
-
-    <!-- MapStruct -->
-    <dependency>
-        <groupId>org.mapstruct</groupId>
-        <artifactId>mapstruct</artifactId>
-        <version>1.5.5.Final</version>
-    </dependency>
-</dependencies>
-```
-
-### 步骤3：配置文件 (application.yml)
-```yaml
-server:
-  port: 8080
-  servlet:
-    context-path: /api
-
-spring:
-  application:
-    name: bookmarket-backend
-
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/bookmarket?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
-    username: root
-    password: your_password
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.MySQLDialect
-
-  data:
-    redis:
-      host: localhost
-      port: 6379
-      database: 0
-      timeout: 3000
-
-  servlet:
-    multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB
-
-# JWT配置
-jwt:
-  secret: your-secret-key-at-least-256-bits-long
-  expiration: 86400000  # 24小时
-
-# Swagger配置
-knife4j:
-  enable: true
-  setting:
-    language: zh_cn
-```
-
-### 步骤4：创建统一响应类
-```java
-package com.bookmarket.dto.response;
-
-import lombok.Data;
-
-@Data
-public class ApiResponse<T> {
-    private Integer code;
-    private String message;
-    private T data;
-
-    public static <T> ApiResponse<T> success(T data) {
-        ApiResponse<T> response = new ApiResponse<>();
-        response.setCode(200);
-        response.setMessage("success");
-        response.setData(data);
-        return response;
-    }
-
-    public static <T> ApiResponse<T> error(Integer code, String message) {
-        ApiResponse<T> response = new ApiResponse<>();
-        response.setCode(code);
-        response.setMessage(message);
-        return response;
-    }
-}
+#### 7. 评价表 (review)
+```sql
+CREATE TABLE `review` (
+  `id` BIGINT PRIMARY KEY AUTO_INCREMENT,
+  `book_id` BIGINT NOT NULL COMMENT '书籍ID',
+  `user_id` BIGINT NOT NULL COMMENT '评价用户ID',
+  `user_name` VARCHAR(50) NOT NULL COMMENT '评价用户名称',
+  `user_avatar` VARCHAR(500) COMMENT '评价用户头像',
+  `rating` TINYINT NOT NULL COMMENT '评分（1-5）',
+  `content` TEXT COMMENT '评价内容',
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_book (`book_id`),
+  INDEX idx_user (`user_id`),
+  INDEX idx_rating (`rating`),
+  FOREIGN KEY (`book_id`) REFERENCES `book`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='评价表';
 ```
 
 ## 📝 开发注意事项
@@ -498,19 +328,7 @@ public enum ErrorCode {
 }
 ```
 
-### 3. 分页参数
-```java
-public class PageRequest {
-    private Integer page = 1;
-    private Integer pageSize = 10;
-
-    public Pageable toPageable() {
-        return PageRequest.of(page - 1, pageSize);
-    }
-}
-```
-
-### 4. 跨域配置
+### 3. 跨域配置
 ```java
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
@@ -526,37 +344,6 @@ public class CorsConfig implements WebMvcConfigurer {
 }
 ```
 
----
-
-## 🚀 测试建议
-
-### 1. 使用Swagger测试
-- 访问 `http://localhost:8080/api/doc.html`
-- 使用Knife4j界面进行接口测试
-
-### 2. 使用Postman测试
-- 导入API集合
-- 配置环境变量
-- 编写测试用例
-
-### 3. 单元测试
-```java
-@SpringBootTest
-class BookServiceTest {
-    @Autowired
-    private BookService bookService;
-
-    @Test
-    void testGetHotBooks() {
-        ApiResponse<List<Book>> response = bookService.getHotBooks(4);
-        assertEquals(200, response.getCode());
-        assertNotNull(response.getData());
-    }
-}
-```
-
----
-
 ## 📚 参考文档
 
 - [Spring Boot官方文档](https://spring.io/projects/spring-boot)
@@ -564,4 +351,3 @@ class BookServiceTest {
 - [Knife4j文档](https://doc.xiaominfo.com/)
 - [JWT文档](https://jwt.io/)
 
----

@@ -151,24 +151,17 @@ onMounted(async () => {
 
 function getConditionClass(condition: string): string {
   const classes: Record<string, string> = {
-    new: 'bg-accent',
-    '90': 'bg-accent',
-    '80': 'bg-secondary',
-    '70': 'bg-orange-500',
-    '60': 'bg-red-500'
+    '全新': 'bg-accent',
+    '九成新': 'bg-accent',
+    '八成新': 'bg-secondary',
+    '七成新': 'bg-orange-500',
+    '六成新及以下': 'bg-red-500'
   }
   return classes[condition] || 'bg-gray-500'
 }
 
 function getConditionText(condition: string): string {
-  const texts: Record<string, string> = {
-    new: '全新',
-    '90': '9成新',
-    '80': '8成新',
-    '70': '7成新',
-    '60': '6成新'
-  }
-  return texts[condition] || condition
+  return condition
 }
 </script>
 

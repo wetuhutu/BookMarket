@@ -26,7 +26,47 @@ instance.interceptors.request.use(
 
 instance.interceptors.response.use(
   (response: AxiosResponse) => {
-    return response.data
+    const data = response.data
+    
+    console.log('=== Response Interceptor ===')
+    console.log('Request URL:', response.config.url)
+    console.log('Response status:', response.status)
+    console.log('Original response data:', data)
+    console.log('Response data type:', typeof data)
+    console.log('Has data.data property:', data && data.data)
+    
+    if (data && data.data) {
+      const responseData = data.data
+      
+      console.log('Response data.data:', responseData)
+      console.log('Response data.data type:', typeof responseData)
+      
+      if (Array.isArray(responseData)) {
+        console.log('Response data is array, length:', responseData.length)
+        responseData.forEach((item: any) => {
+          if (item.images && typeof item.images === 'string') {
+            try {
+              item.images = JSON.parse(item.images)
+            } catch (e) {
+              console.error('Failed to parse images string:', e)
+              item.images = []
+            }
+          }
+        })
+      } else if (typeof responseData === 'object' && responseData.images && typeof responseData.images === 'string') {
+        console.log('Response data has images property, parsing...')
+        try {
+          responseData.images = JSON.parse(responseData.images)
+        } catch (e) {
+          console.error('Failed to parse images string:', e)
+          responseData.images = []
+        }
+      }
+    }
+    
+    console.log('Processed response data:', data)
+    console.log('=== End Response Interceptor ===')
+    return data
   },
   (error) => {
     const { response } = error
