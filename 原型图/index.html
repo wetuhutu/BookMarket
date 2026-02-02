@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="书市 - 专业的二手书交易平台，让闲置书籍焕发新生">
+    <meta name="keywords" content="二手书,旧书交易,图书买卖,书籍回收">
+    <title>书市 - 在线二手书交易平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        'primary-dark': '#4f46e5',
+                        secondary: '#f59e0b',
+                        'secondary-dark': '#d97706',
+                        accent: '#10b981',
+                        'accent-dark': '#059669',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+        .nav-link {
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #6366f1;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+        .category-card {
+            transition: all 0.3s ease;
+        }
+        .category-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+        }
+        .book-card {
+            transition: all 0.3s ease;
+        }
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    
+    <header class="fixed top-0 left-0 right-0 z-50 glass-effect shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center space-x-2">
+                        <span class="text-3xl">📚</span>
+                        <span class="text-2xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">书市</span>
+                    </a>
+                </div>
+                
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="nav-link active text-gray-900 font-medium">首页</a>
+                    <a href="books.html" class="nav-link text-gray-600 hover:text-gray-900 font-medium">全部书籍</a>
+                    <a href="seller-center.html" class="nav-link text-gray-600 hover:text-gray-900 font-medium">卖家中心</a>
+                </nav>
+
+                <div class="flex items-center space-x-4">
+                    <div class="hidden sm:flex items-center bg-gray-100 rounded-full px-4 py-2">
+                        <i class="fas fa-search text-gray-400 mr-2"></i>
+                        <input type="text" placeholder="搜索书名、作者、ISBN..." class="bg-transparent outline-none w-48 text-sm">
+                    </div>
+                    
+                    <a href="cart.html" class="relative p-2 text-gray-600 hover:text-gray-900 transition-colors">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">3</span>
+                    </a>
+                    
+                    <a href="login.html" class="hidden sm:block px-4 py-2 text-primary font-medium hover:text-primary-dark transition-colors">登录</a>
+                    <a href="register.html" class="px-4 py-2 bg-primary text-white rounded-full font-medium hover:bg-primary-dark transition-colors">注册</a>
+                    
+                    <button class="md:hidden p-2 text-gray-600">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-16">
+        <section class="gradient-bg text-white py-20 lg:py-32">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div class="text-center lg:text-left">
+                        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                            让闲置书籍<br>焕发新生
+                        </h1>
+                        <p class="text-xl md:text-2xl mb-8 text-white/90">
+                            安全、便捷、实惠的二手书交易平台
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                            <a href="books.html" class="btn-primary px-8 py-4 rounded-full text-lg font-semibold text-white shadow-lg">
+                                <i class="fas fa-book-open mr-2"></i>浏览书籍
+                            </a>
+                            <a href="seller-center.html" class="px-8 py-4 rounded-full text-lg font-semibold bg-white text-primary hover:bg-gray-100 transition-colors shadow-lg">
+                                <i class="fas fa-plus-circle mr-2"></i>我要卖书
+                            </a>
+                        </div>
+                    </div>
+                    <div class="hidden lg:block">
+                        <div class="relative">
+                            <div class="absolute inset-0 bg-white/20 rounded-3xl transform rotate-6"></div>
+                            <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=600&h=400&fit=crop" alt="二手书交易" class="relative rounded-3xl shadow-2xl w-full">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">热门分类</h2>
+                    <p class="text-gray-600 text-lg">探索各类二手书籍，找到你心仪的好书</p>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                    <a href="books.html?category=literature" class="category-card bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl p-6 text-center cursor-pointer">
+                        <div class="text-5xl mb-4">📖</div>
+                        <h3 class="font-semibold text-gray-900 mb-1">文学小说</h3>
+                        <p class="text-sm text-gray-600">2,345 本</p>
+                    </a>
+                    <a href="books.html?category=tech" class="category-card bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 text-center cursor-pointer">
+                        <div class="text-5xl mb-4">💻</div>
+                        <h3 class="font-semibold text-gray-900 mb-1">计算机技术</h3>
+                        <p class="text-sm text-gray-600">1,876 本</p>
+                    </a>
+                    <a href="books.html?category=education" class="category-card bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 text-center cursor-pointer">
+                        <div class="text-5xl mb-4">🎓</div>
+                        <h3 class="font-semibold text-gray-900 mb-1">教育教材</h3>
+                        <p class="text-sm text-gray-600">3,421 本</p>
+                    </a>
+                    <a href="books.html?category=art" class="category-card bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-6 text-center cursor-pointer">
+                        <div class="text-5xl mb-4">🎨</div>
+                        <h3 class="font-semibold text-gray-900 mb-1">艺术设计</h3>
+                        <p class="text-sm text-gray-600">987 本</p>
+                    </a>
+                    <a href="books.html?category=business" class="category-card bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-2xl p-6 text-center cursor-pointer">
+                        <div class="text-5xl mb-4">💼</div>
+                        <h3 class="font-semibold text-gray-900 mb-1">经管励志</h3>
+                        <p class="text-sm text-gray-600">1,234 本</p>
+                    </a>
+                    <a href="books.html?category=science" class="category-card bg-gradient-to-br from-red-50 to-red-100 rounded-2xl p-6 text-center cursor-pointer">
+                        <div class="text-5xl mb-4">🔬</div>
+                        <h3 class="font-semibold text-gray-900 mb-1">自然科学</h3>
+                        <p class="text-sm text-gray-600">765 本</p>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-16 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center mb-12">
+                    <div>
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">热门推荐</h2>
+                        <p class="text-gray-600 text-lg">精选优质二手书籍，超值优惠</p>
+                    </div>
+                    <a href="books.html" class="hidden md:flex items-center text-primary font-semibold hover:text-primary-dark transition-colors">
+                        查看更多 <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="book-card bg-white rounded-2xl overflow-hidden shadow-md">
+                        <div class="relative">
+                            <img src="https://images.unsplash.com/photo-1532012197267-da84d127e765?w=300&h=400&fit=crop" alt="书籍封面" class="w-full h-64 object-cover">
+                            <span class="absolute top-4 right-4 bg-accent text-white text-xs font-semibold px-3 py-1 rounded-full">9成新</span>
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2">JavaScript高级程序设计</h3>
+                            <p class="text-sm text-gray-600 mb-3">作者：Nicholas C. Zakas</p>
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <span class="text-xl font-bold text-primary">¥45.00</span>
+                                    <span class="text-sm text-gray-400 line-through ml-2">¥99.00</span>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <a href="book-detail.html" class="flex-1 text-center py-2 border-2 border-primary text-primary rounded-lg font-medium hover:bg-primary hover:text-white transition-colors">查看详情</a>
+                                <button class="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors">
+                                    <i class="fas fa-cart-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="book-card bg-white rounded-2xl overflow-hidden shadow-md">
+                        <div class="relative">
+                            <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=300&h=400&fit=crop" alt="书籍封面" class="w-full h-64 object-cover">
+                            <span class="absolute top-4 right-4 bg-secondary text-white text-xs font-semibold px-3 py-1 rounded-full">8成新</span>
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2">深入理解计算机系统</h3>
+                            <p class="text-sm text-gray-600 mb-3">作者：Randal E. Bryant</p>
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <span class="text-xl font-bold text-primary">¥68.00</span>
+                                    <span class="text-sm text-gray-400 line-through ml-2">¥139.00</span>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <a href="book-detail.html" class="flex-1 text-center py-2 border-2 border-primary text-primary rounded-lg font-medium hover:bg-primary hover:text-white transition-colors">查看详情</a>
+                                <button class="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors">
+                                    <i class="fas fa-cart-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="book-card bg-white rounded-2xl overflow-hidden shadow-md">
+                        <div class="relative">
+                            <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=300&h=400&fit=crop" alt="书籍封面" class="w-full h-64 object-cover">
+                            <span class="absolute top-4 right-4 bg-accent text-white text-xs font-semibold px-3 py-1 rounded-full">全新</span>
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2">设计模式：可复用面向对象软件的基础</h3>
+                            <p class="text-sm text-gray-600 mb-3">作者：Erich Gamma 等</p>
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <span class="text-xl font-bold text-primary">¥35.00</span>
+                                    <span class="text-sm text-gray-400 line-through ml-2">¥55.00</span>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <a href="book-detail.html" class="flex-1 text-center py-2 border-2 border-primary text-primary rounded-lg font-medium hover:bg-primary hover:text-white transition-colors">查看详情</a>
+                                <button class="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors">
+                                    <i class="fas fa-cart-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="book-card bg-white rounded-2xl overflow-hidden shadow-md">
+                        <div class="relative">
+                            <img src="https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=300&h=400&fit=crop" alt="书籍封面" class="w-full h-64 object-cover">
+                            <span class="absolute top-4 right-4 bg-orange-500 text-white text-xs font-semibold px-3 py-1 rounded-full">7成新</span>
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2">人月神话</h3>
+                            <p class="text-sm text-gray-600 mb-3">作者：Frederick P. Brooks Jr.</p>
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <span class="text-xl font-bold text-primary">¥28.00</span>
+                                    <span class="text-sm text-gray-400 line-through ml-2">¥48.00</span>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <a href="book-detail.html" class="flex-1 text-center py-2 border-2 border-primary text-primary rounded-lg font-medium hover:bg-primary hover:text-white transition-colors">查看详情</a>
+                                <button class="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors">
+                                    <i class="fas fa-cart-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 text-center md:hidden">
+                    <a href="books.html" class="inline-flex items-center px-6 py-3 bg-primary text-white rounded-full font-semibold hover:bg-primary-dark transition-colors">
+                        查看更多 <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">平台特色</h2>
+                    <p class="text-gray-600 text-lg">为什么选择书市？</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="feature-card bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-8 text-center">
+                        <div class="text-6xl mb-4">🛡️</div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">安全保障</h3>
+                        <p class="text-gray-600">实名认证、资金担保交易，让买卖更放心</p>
+                    </div>
+                    <div class="feature-card bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-8 text-center">
+                        <div class="text-6xl mb-4">💰</div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">价格实惠</h3>
+                        <p class="text-gray-600">二手书价格仅为新书的3-5折，省钱又环保</p>
+                    </div>
+                    <div class="feature-card bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-8 text-center">
+                        <div class="text-6xl mb-4">🚚</div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">物流便捷</h3>
+                        <p class="text-gray-600">全国包邮，快速发货，7天无理由退换</p>
+                    </div>
+                    <div class="feature-card bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl p-8 text-center">
+                        <div class="text-6xl mb-4">🤝</div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">诚信交易</h3>
+                        <p class="text-gray-600">完善的评价体系，真实可靠的交易记录</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <span class="text-3xl">📚</span>
+                        <span class="text-2xl font-bold">书市</span>
+                    </div>
+                    <p class="text-gray-400">让闲置书籍焕发新生，打造最优质的二手书交易平台</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">关于我们</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">平台介绍</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">联系我们</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">加入我们</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">帮助中心</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">常见问题</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">交易规则</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">隐私政策</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">关注我们</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-primary transition-colors">
+                            <i class="fab fa-weixin"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-primary transition-colors">
+                            <i class="fab fa-weibo"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-primary transition-colors">
+                            <i class="fab fa-qq"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 书市 版权所有 | 京ICP备XXXXXXXX号</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

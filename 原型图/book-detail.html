@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="查看二手书详细信息，包括封面、书名、作者、ISBN、价格、新旧程度、卖家信息等">
+    <meta name="keywords" content="二手书详情,书籍信息,卖家信息">
+    <title>JavaScript高级程序设计 - 书市</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        'primary-dark': '#4f46e5',
+                        secondary: '#f59e0b',
+                        accent: '#10b981',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        .thumbnail {
+            transition: all 0.2s ease;
+        }
+        .thumbnail:hover, .thumbnail.active {
+            border-color: #6366f1;
+            transform: scale(1.05);
+        }
+        .tab-btn {
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active {
+            color: #6366f1;
+            border-bottom: 2px solid #6366f1;
+        }
+        .review-item {
+            transition: all 0.3s ease;
+        }
+        .review-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    
+    <header class="fixed top-0 left-0 right-0 z-50 glass-effect shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center space-x-2">
+                        <span class="text-3xl">📚</span>
+                        <span class="text-2xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">书市</span>
+                    </a>
+                </div>
+                
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-gray-600 hover:text-gray-900 font-medium">首页</a>
+                    <a href="books.html" class="text-gray-600 hover:text-gray-900 font-medium">全部书籍</a>
+                    <a href="seller-center.html" class="text-gray-600 hover:text-gray-900 font-medium">卖家中心</a>
+                </nav>
+
+                <div class="flex items-center space-x-4">
+                    <div class="hidden sm:flex items-center bg-gray-100 rounded-full px-4 py-2">
+                        <i class="fas fa-search text-gray-400 mr-2"></i>
+                        <input type="text" placeholder="搜索书名、作者、ISBN..." class="bg-transparent outline-none w-48 text-sm">
+                    </div>
+                    
+                    <a href="cart.html" class="relative p-2 text-gray-600 hover:text-gray-900 transition-colors">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">3</span>
+                    </a>
+                    
+                    <a href="login.html" class="hidden sm:block px-4 py-2 text-primary font-medium hover:text-primary-dark transition-colors">登录</a>
+                    <a href="register.html" class="px-4 py-2 bg-primary text-white rounded-full font-medium hover:bg-primary-dark transition-colors">注册</a>
+                    
+                    <button class="md:hidden p-2 text-gray-600">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <nav class="flex items-center text-sm text-gray-500 mb-8">
+                <a href="index.html" class="hover:text-primary transition-colors">首页</a>
+                <i class="fas fa-chevron-right mx-2 text-xs"></i>
+                <a href="books.html" class="hover:text-primary transition-colors">全部书籍</a>
+                <i class="fas fa-chevron-right mx-2 text-xs"></i>
+                <a href="books.html?category=tech" class="hover:text-primary transition-colors">计算机技术</a>
+                <i class="fas fa-chevron-right mx-2 text-xs"></i>
+                <span class="text-gray-900">JavaScript高级程序设计</span>
+            </nav>
+
+            <section class="bg-white rounded-2xl shadow-sm p-6 lg:p-8 mb-8">
+                <div class="grid lg:grid-cols-2 gap-8 lg:gap-12">
+                    <div>
+                        <div class="relative mb-4">
+                            <img src="https://images.unsplash.com/photo-1532012197267-da84d127e765?w=600&h=800&fit=crop" alt="JavaScript高级程序设计" class="w-full rounded-xl shadow-lg">
+                        </div>
+                        <div class="grid grid-cols-4 gap-3">
+                            <img src="https://images.unsplash.com/photo-1532012197267-da84d127e765?w=150&h=200&fit=crop" alt="封面" class="thumbnail active w-full h-20 object-cover rounded-lg border-2 border-transparent cursor-pointer">
+                            <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=150&h=200&fit=crop" alt="目录" class="thumbnail w-full h-20 object-cover rounded-lg border-2 border-transparent cursor-pointer">
+                            <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=150&h=200&fit=crop" alt="内页" class="thumbnail w-full h-20 object-cover rounded-lg border-2 border-transparent cursor-pointer">
+                            <img src="https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=150&h=200&fit=crop" alt="封底" class="thumbnail w-full h-20 object-cover rounded-lg border-2 border-transparent cursor-pointer">
+                        </div>
+                    </div>
+
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">JavaScript高级程序设计（第4版）</h1>
+                        <p class="text-gray-500 mb-4">Professional JavaScript for Web Developers</p>
+                        
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm rounded-full">计算机技术</span>
+                            <span class="px-3 py-1 bg-accent text-white text-sm rounded-full">9成新</span>
+                            <span class="px-3 py-1 bg-yellow-100 text-yellow-700 text-sm rounded-full">金牌卖家</span>
+                        </div>
+
+                        <div class="flex items-end gap-4 mb-6">
+                            <div class="text-4xl font-bold text-primary">¥45.00</div>
+                            <div class="text-gray-400 line-through text-xl mb-1">¥99.00</div>
+                            <div class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-medium mb-1">4.5折</div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 mb-6 text-sm">
+                            <div>
+                                <span class="text-gray-500">作者：</span>
+                                <span class="text-gray-900 font-medium">Nicholas C. Zakas</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">出版社：</span>
+                                <span class="text-gray-900 font-medium">人民邮电出版社</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">出版时间：</span>
+                                <span class="text-gray-900 font-medium">2020年9月</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">ISBN：</span>
+                                <span class="text-gray-900 font-medium">978-7-115-54538-1</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">页数：</span>
+                                <span class="text-gray-900 font-medium">864页</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">新旧程度：</span>
+                                <span class="text-gray-900 font-medium">9成新，无笔记无划痕</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2 mb-6">
+                            <span class="text-gray-500">库存：</span>
+                            <span class="text-accent font-medium">有货（仅1件）</span>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row gap-4 mb-6">
+                            <button class="flex-1 py-4 bg-gradient-to-r from-primary to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all">
+                                <i class="fas fa-bolt mr-2"></i>立即购买
+                            </button>
+                            <button class="flex-1 py-4 border-2 border-primary text-primary rounded-xl font-semibold hover:bg-primary hover:text-white transition-colors">
+                                <i class="fas fa-cart-plus mr-2"></i>加入购物车
+                            </button>
+                            <button class="px-6 py-4 border-2 border-gray-300 rounded-xl hover:border-red-500 hover:text-red-500 transition-colors">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                            <button class="px-6 py-4 border-2 border-gray-300 rounded-xl hover:border-primary hover:text-primary transition-colors">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                        </div>
+
+                        <div class="flex flex-wrap gap-4 text-sm text-gray-600">
+                            <span class="flex items-center"><i class="fas fa-check-circle text-accent mr-2"></i>7天无理由退换</span>
+                            <span class="flex items-center"><i class="fas fa-check-circle text-accent mr-2"></i>正版保证</span>
+                            <span class="flex items-center"><i class="fas fa-check-circle text-accent mr-2"></i>资金担保</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white rounded-2xl shadow-sm p-6 lg:p-8 mb-8">
+                <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                    <i class="fas fa-store mr-2 text-primary"></i>卖家信息
+                </h2>
+                <div class="flex flex-col md:flex-row gap-6 items-start md:items-center">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop" alt="卖家头像" class="w-20 h-20 rounded-full object-cover">
+                        <span class="absolute -bottom-1 -right-1 bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">金牌</span>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-2">
+                            <h3 class="text-lg font-bold text-gray-900">书香阁</h3>
+                            <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">金牌卖家</span>
+                            <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">已认证</span>
+                        </div>
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="flex text-yellow-400">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="text-gray-600">4.9分</span>
+                        </div>
+                        <div class="flex flex-wrap gap-4 text-sm text-gray-600 mb-3">
+                            <span>在售：128本</span>
+                            <span>已售：2,341本</span>
+                            <span>好评率：99.2%</span>
+                        </div>
+                        <p class="text-gray-600 text-sm">专注计算机技术类书籍，保证正版，发货迅速，欢迎选购！</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <button class="px-6 py-2 border-2 border-primary text-primary rounded-lg font-medium hover:bg-primary hover:text-white transition-colors">
+                            <i class="fas fa-comment-dots mr-2"></i>联系卖家
+                        </button>
+                        <button class="px-6 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors">
+                            <i class="fas fa-store mr-2"></i>进入店铺
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white rounded-2xl shadow-sm p-6 lg:p-8 mb-8">
+                <div class="flex border-b border-gray-200 mb-6">
+                    <button class="tab-btn active px-6 py-3 font-medium text-gray-600 hover:text-primary" data-tab="description">商品详情</button>
+                    <button class="tab-btn px-6 py-3 font-medium text-gray-600 hover:text-primary" data-tab="reviews">用户评价（128）</button>
+                    <button class="tab-btn px-6 py-3 font-medium text-gray-600 hover:text-primary" data-tab="shipping">配送说明</button>
+                </div>
+
+                <div id="description" class="tab-content">
+                    <div class="prose max-w-none">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">内容简介</h3>
+                        <p class="text-gray-600 mb-6 leading-relaxed">本书是JavaScript开发者必备的经典参考书，全面深入地介绍了JavaScript语言的核心概念和最佳实践。第4版涵盖了ES2019及之后的新特性，包括Promise、async/await、模块化等现代JavaScript开发技术。</p>
+                        
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">目录</h3>
+                        <ul class="space-y-2 text-gray-600 mb-6">
+                            <li class="flex items-center"><i class="fas fa-chevron-right text-primary mr-2 text-sm"></i>第1章 什么是JavaScript</li>
+                            <li class="flex items-center"><i class="fas fa-chevron-right text-primary mr-2 text-sm"></i>第2章 HTML中的JavaScript</li>
+                            <li class="flex items-center"><i class="fas fa-chevron-right text-primary mr-2 text-sm"></i>第3章 语言基础</li>
+                            <li class="flex items-center"><i class="fas fa-chevron-right text-primary mr-2 text-sm"></i>第4章 变量、作用域与内存</li>
+                            <li class="flex items-center"><i class="fas fa-chevron-right text-primary mr-2 text-sm"></i>第5章 基本引用类型</li>
+                            <li class="flex items-center"><i class="fas fa-chevron-right text-primary mr-2 text-sm"></i>第6章 集合引用类型</li>
+                            <li class="flex items-center"><i class="fas fa-chevron-right text-primary mr-2 text-sm"></i>第7章 迭代器与生成器</li>
+                            <li class="flex items-center"><i class="fas fa-chevron-right text-primary mr-2 text-sm"></i>第8章 对象、类与面向对象编程</li>
+                            <li class="flex items-center"><i class="fas fa-chevron-right text-primary mr-2 text-sm"></i>第9章 代理与反射</li>
+                            <li class="flex items-center"><i class="fas fa-chevron-right text-primary mr-2 text-sm"></i>第10章 函数</li>
+                        </ul>
+
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">书籍状况说明</h3>
+                        <p class="text-gray-600 leading-relaxed">本书为9成新，封面有轻微使用痕迹，内页整洁无笔记无划痕，装订完好。原书购于2021年，保存良好。</p>
+                    </div>
+                </div>
+
+                <div id="reviews" class="tab-content hidden">
+                    <div class="grid md:grid-cols-2 gap-8 mb-8">
+                        <div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="text-5xl font-bold text-primary">4.9</div>
+                                <div class="flex text-yellow-400 text-2xl">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                            </div>
+                            <div class="text-gray-600">128条评价</div>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3">
+                                <span class="text-sm text-gray-600 w-12">好评</span>
+                                <div class="flex-1 bg-gray-200 rounded-full h-3 overflow-hidden">
+                                    <div class="bg-accent h-full" style="width: 95%"></div>
+                                </div>
+                                <span class="text-sm text-gray-600 w-10">95%</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-sm text-gray-600 w-12">中评</span>
+                                <div class="flex-1 bg-gray-200 rounded-full h-3 overflow-hidden">
+                                    <div class="bg-yellow-400 h-full" style="width: 4%"></div>
+                                </div>
+                                <span class="text-sm text-gray-600 w-10">4%</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-sm text-gray-600 w-12">差评</span>
+                                <div class="flex-1 bg-gray-200 rounded-full h-3 overflow-hidden">
+                                    <div class="bg-red-400 h-full" style="width: 1%"></div>
+                                </div>
+                                <span class="text-sm text-gray-600 w-10">1%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="review-item bg-gray-50 rounded-xl p-6">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=50&h=50&fit=crop" alt="用户头像" class="w-10 h-10 rounded-full">
+                                    <div>
+                                        <div class="font-medium text-gray-900">张***</div>
+                                        <div class="flex text-yellow-400 text-sm">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="text-sm text-gray-500">2024-01-15</span>
+                            </div>
+                            <p class="text-gray-600 mb-4">书很新，和描述的一样，发货速度快，卖家服务态度好，推荐购买！</p>
+                            <div class="flex gap-3">
+                                <img src="https://images.unsplash.com/photo-1532012197267-da84d127e765?w=100&h=100&fit=crop" alt="评价图片" class="w-20 h-20 rounded-lg object-cover cursor-pointer hover:opacity-80">
+                                <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=100&h=100&fit=crop" alt="评价图片" class="w-20 h-20 rounded-lg object-cover cursor-pointer hover:opacity-80">
+                            </div>
+                        </div>
+
+                        <div class="review-item bg-gray-50 rounded-xl p-6">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=50&h=50&fit=crop" alt="用户头像" class="w-10 h-10 rounded-full">
+                                    <div>
+                                        <div class="font-medium text-gray-900">李***</div>
+                                        <div class="flex text-yellow-400 text-sm">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="text-sm text-gray-500">2024-01-10</span>
+                            </div>
+                            <p class="text-gray-600">正版书，质量很好，价格实惠，非常满意的一次购物体验。</p>
+                        </div>
+
+                        <div class="review-item bg-gray-50 rounded-xl p-6">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=50&h=50&fit=crop" alt="用户头像" class="w-10 h-10 rounded-full">
+                                    <div>
+                                        <div class="font-medium text-gray-900">王***</div>
+                                        <div class="flex text-yellow-400 text-sm">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="text-sm text-gray-500">2024-01-05</span>
+                            </div>
+                            <p class="text-gray-600">书的内容很好，就是封面有点旧，不过不影响阅读，整体满意。</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 text-center">
+                        <button class="px-8 py-3 border-2 border-primary text-primary rounded-full font-medium hover:bg-primary hover:text-white transition-colors">
+                            查看全部评价
+                        </button>
+                    </div>
+                </div>
+
+                <div id="shipping" class="tab-content hidden">
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-truck mr-2 text-primary"></i>配送方式
+                            </h3>
+                            <ul class="space-y-2 text-gray-600">
+                                <li class="flex items-start"><i class="fas fa-check text-accent mr-3 mt-1"></i>快递配送：支持全国大部分地区，偏远地区除外</li>
+                                <li class="flex items-start"><i class="fas fa-check text-accent mr-3 mt-1"></i>配送时间：下单后24小时内发货，一般3-5天送达</li>
+                                <li class="flex items-start"><i class="fas fa-check text-accent mr-3 mt-1"></i>运费说明：全场包邮</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-undo mr-2 text-primary"></i>退换货政策
+                            </h3>
+                            <ul class="space-y-2 text-gray-600">
+                                <li class="flex items-start"><i class="fas fa-check text-accent mr-3 mt-1"></i>支持7天无理由退换货</li>
+                                <li class="flex items-start"><i class="fas fa-check text-accent mr-3 mt-1"></i>商品需保持原包装完好，不影响二次销售</li>
+                                <li class="flex items-start"><i class="fas fa-check text-accent mr-3 mt-1"></i>退货运费由买家承担（质量问题除外）</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-info-circle mr-2 text-primary"></i>注意事项
+                            </h3>
+                            <ul class="space-y-2 text-gray-600">
+                                <li class="flex items-start"><i class="fas fa-exclamation-circle text-yellow-500 mr-3 mt-1"></i>二手商品可能存在轻微使用痕迹，属正常现象</li>
+                                <li class="flex items-start"><i class="fas fa-exclamation-circle text-yellow-500 mr-3 mt-1"></i>收到商品后请及时检查，如有问题请联系卖家</li>
+                                <li class="flex items-start"><i class="fas fa-exclamation-circle text-yellow-500 mr-3 mt-1"></i>请确认收货地址准确，避免配送失败</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white rounded-2xl shadow-sm p-6 lg:p-8">
+                <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                    <i class="fas fa-book-open mr-2 text-primary"></i>相关推荐
+                </h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div class="bg-gray-50 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
+                        <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=200&h=280&fit=crop" alt="书籍封面" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2">深入理解计算机系统</h3>
+                            <div class="flex items-center justify-between">
+                                <span class="text-lg font-bold text-primary">¥68.00</span>
+                                <span class="text-sm text-gray-400 line-through">¥139.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
+                        <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=200&h=280&fit=crop" alt="书籍封面" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2">设计模式：可复用面向对象软件的基础</h3>
+                            <div class="flex items-center justify-between">
+                                <span class="text-lg font-bold text-primary">¥35.00</span>
+                                <span class="text-sm text-gray-400 line-through">¥55.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
+                        <img src="https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=200&h=280&fit=crop" alt="书籍封面" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2">代码整洁之道</h3>
+                            <div class="flex items-center justify-between">
+                                <span class="text-lg font-bold text-primary">¥32.00</span>
+                                <span class="text-sm text-gray-400 line-through">¥59.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
+                        <img src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=200&h=280&fit=crop" alt="书籍封面" class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2">重构：改善既有代码的设计</h3>
+                            <div class="flex items-center justify-between">
+                                <span class="text-lg font-bold text-primary">¥55.00</span>
+                                <span class="text-sm text-gray-400 line-through">¥89.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="bg-gray-900 text-white py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p>&copy; 2024 书市 版权所有 | 京ICP备XXXXXXXX号</p>
+        </div>
+    </footer>
+
+</body>
+</html>
