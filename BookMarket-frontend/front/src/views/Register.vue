@@ -1,7 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50 flex items-center justify-center">
     <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
-<<<<<<< HEAD
       <!-- 标题区域 -->
       <div class="text-center mb-8">
         <div class="flex justify-center mb-4">
@@ -148,16 +147,11 @@
           <i class="fab fa-weibo text-xl"></i>
         </button>
       </div>
-=======
-      <h1 class="text-3xl font-bold text-gray-900 mb-6 text-center">注册</h1>
-      <p class="text-gray-600">注册页面开发中...</p>
->>>>>>> 1b7f4da4194fd316326824322df97b8d129d39a2
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-<<<<<<< HEAD
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { register, sendCode, socialLogin } from '@/api/auth'
@@ -319,6 +313,4 @@ const socialRegister = async (provider: 'wechat' | 'qq' | 'weibo') => {
     errorMessage.value = '社交注册失败，请稍后重试'
   }
 }
-=======
->>>>>>> 1b7f4da4194fd316326824322df97b8d129d39a2
 </script>
